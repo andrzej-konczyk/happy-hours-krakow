@@ -1,0 +1,21 @@
+[
+  {
+    "url": "https://alchemia.com.pl/",
+    "type": "html",
+    "status": "ok",
+    "scraped_at": "2026-04-07T22:55:42.366748",
+    "snippets": []
+  },
+  {
+    "url": "https://ckbrowar.pl/wp-content/uploads/2026/02/menu-web-01.2026.pdf",
+    "type": "pdf",
+    "status": "ok",
+    "scraped_at": "2026-04-07T22:55:43.174801",
+    "snippets": [
+      {
+        "keyword": "promocja",
+        "snippet": "NCH\nod poniedziałku do piątku\nFrom Monday to Friday\nw godz. 12:00 - 16:00\nat 12.00 p.m. - 4.00 p.m.\nPromocja nie dotyczy grup powyżej 10 osób\nThe special offer only applies to groups for up to 10 people.\nZupa"
+      }
+    ]
+  }
+]

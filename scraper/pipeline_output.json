@@ -1,0 +1,17 @@
+[
+  {
+    "description": "Soup promotion for groups up to 10 people",
+    "start_time": "12:00",
+    "end_time": "16:00",
+    "days_of_week": [
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday"
+    ],
+    "confidence": "high",
+    "venue_id": "82755228-76bb-4187-a167-f45ec077322d",
+    "source_url": "https://ckbrowar.pl/wp-content/uploads/2026/02/menu-web-01.2026.pdf"
+  }
+]
