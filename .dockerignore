@@ -7,3 +7,7 @@ __pycache__
 tests
 scraper/output.json
 scraper/pipeline_output.json
+*.log
+*.tmp
+*.bak
+scraper/parser,py.txt

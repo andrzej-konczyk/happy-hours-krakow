@@ -1,6 +1,7 @@
 services:
   api:
     build: .
+    image: happy-hours-krakow:local
     env_file:
       - .env
     ports:
@@ -8,7 +9,7 @@ services:
     restart: unless-stopped
 
   seed:
-    build: .
+    image: happy-hours-krakow:local
     env_file:
       - .env
     profiles:
@@ -16,7 +17,7 @@ services:
     command: ["python", "seed_data.py"]
 
   pipeline:
-    build: .
+    image: happy-hours-krakow:local
     env_file:
       - .env
     profiles:

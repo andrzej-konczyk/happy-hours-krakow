@@ -78,6 +78,10 @@ Build the application image:
 docker compose build
 ```
 
+The image is built once and reused by the seed, pipeline, and API services.
+The Docker build intentionally uses binary wheels where available, so the
+first build may take a few minutes while dependencies download.
+
 Seed the restored Supabase project:
 
 ```powershell
