@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from uuid import UUID
-from datetime import time
+from datetime import date, datetime, time
+from pydantic import Field
 
 
 class Deal(BaseModel):
@@ -11,5 +12,10 @@ class Deal(BaseModel):
     end_time:    time
     days_of_week: list[str]
     type:         str        = "mixed"
-    tags:         list[str]  = []
-    value_score:  int        = 1
+    tags:        list[str] = Field(default_factory=list)
+    value_score:  int = 1
+    status: str = "verified"
+    verified_at: datetime | None = None
+    valid_until: date | None = None
+    source_url: str | None = None
+    confidence: str | None = None

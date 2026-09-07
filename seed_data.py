@@ -5,6 +5,7 @@ Run: python seed_data.py
 
 import os
 import sys
+from urllib.parse import quote
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -18,25 +19,25 @@ VENUES = [
     # already in DB — will be skipped if name exists
     {"name": "Piwnica Pod Złotą Pipą",   "address": "ul. Floriańska 30, Kraków",       "lat": 50.062500, "lng": 19.938500, "category": "pub"},
     {"name": "Café Szafé",               "address": "ul. Felicjanek 10, Kraków",        "lat": 50.058800, "lng": 19.935200, "category": "cafe"},
-    {"name": "C.K. Browar",              "address": "ul. Podwale 6-7, Kraków",          "lat": 50.061500, "lng": 19.936800, "category": "pub"},
+    {"name": "C.K. Browar",             "address": "ul. Podwale 6-7, Kraków",          "lat": 50.061500, "lng": 19.936800, "category": "pub", "website_url": "https://ckbrowar.pl/"},
     # new venues
-    {"name": "Alchemia",                 "address": "ul. Estery 5, Kraków",             "lat": 50.051200, "lng": 19.944600, "category": "pub"},
-    {"name": "Omerta Pub",               "address": "ul. Kupa 3, Kraków",               "lat": 50.052100, "lng": 19.945300, "category": "pub"},
+    {"name": "Alchemia",                 "address": "ul. Estery 5, Kraków",             "lat": 50.051200, "lng": 19.944600, "category": "pub", "website_url": "https://alchemia.com.pl/"},
+    {"name": "Omerta Pub",               "address": "ul. Kupa 3, Kraków",               "lat": 50.052100, "lng": 19.945300, "category": "pub", "website_url": "https://omerta.ontap.pl/"},
     {"name": "Craftownia",               "address": "ul. Św. Wawrzyńca 22, Kraków",    "lat": 50.052800, "lng": 19.946100, "category": "pub"},
     {"name": "House of Beer",            "address": "ul. Św. Tomasza 35, Kraków",       "lat": 50.062100, "lng": 19.937400, "category": "pub"},
-    {"name": "Mercy Brown",              "address": "ul. Estery 5, Kraków",             "lat": 50.051500, "lng": 19.944800, "category": "bar"},
+    {"name": "Mercy Brown",              "address": "ul. Estery 5, Kraków",             "lat": 50.051500, "lng": 19.944800, "category": "bar", "website_url": "https://www.mercybrown.pl/"},
     {"name": "Propaganda Pub",           "address": "ul. Miodowa 20, Kraków",           "lat": 50.053400, "lng": 19.947200, "category": "pub"},
-    {"name": "Stara Zajezdnia",          "address": "ul. Św. Wawrzyńca 12, Kraków",    "lat": 50.051900, "lng": 19.945700, "category": "pub"},
+    {"name": "Stara Zajezdnia",         "address": "ul. Św. Wawrzyńca 12, Kraków",    "lat": 50.051900, "lng": 19.945700, "category": "pub", "website_url": "https://starazajezdniakrakow.pl/"},
     {"name": "Weźże Krafta",             "address": "ul. Dajwór 16, Kraków",            "lat": 50.052600, "lng": 19.950100, "category": "pub"},
     {"name": "Szklarnie",                "address": "ul. Jakuba 19, Kraków",            "lat": 50.051800, "lng": 19.944200, "category": "bar"},
     {"name": "Nowy Kraftowy",            "address": "Plac Nowy 8, Kraków",              "lat": 50.051000, "lng": 19.943800, "category": "pub"},
     {"name": "Pijalnia Wódki i Piwa",    "address": "ul. Św. Jana 5, Kraków",           "lat": 50.062800, "lng": 19.937100, "category": "bar"},
     {"name": "Ambasada Śledzia",         "address": "ul. Stolarska 8, Kraków",          "lat": 50.061400, "lng": 19.939200, "category": "bar"},
-    {"name": "Forum Przestrzenie",       "address": "ul. Konopnickiej 28, Kraków",      "lat": 50.051700, "lng": 19.927300, "category": "bar"},
-    {"name": "Bunkier Cafe",             "address": "Plac Szczepański 3a, Kraków",      "lat": 50.062300, "lng": 19.933600, "category": "cafe"},
-    {"name": "Spoko Pub",                "address": "ul. Kalwaryjska 9, Kraków",        "lat": 50.047200, "lng": 19.934800, "category": "pub"},
-    {"name": "Ursa Maior",               "address": "ul. Szewska 21, Kraków",           "lat": 50.061700, "lng": 19.936400, "category": "pub"},
+    {"name": "Bunkier Cafe",             "address": "Plac Szczepański 3a, Kraków",      "lat": 50.062300, "lng": 19.933600, "category": "cafe", "website_url": "https://www.facebook.com/bunkiercafe"},
+    {"name": "Spoko Pub",               "address": "ul. Kalwaryjska 9, Kraków",        "lat": 50.047200, "lng": 19.934800, "category": "pub", "website_url": "https://spokopub.pl/"},
+    {"name": "Ursa Maior",              "address": "ul. Szewska 21, Kraków",            "lat": 50.061700, "lng": 19.936400, "category": "pub", "website_url": "https://ursamaior.pl/"},
     {"name": "TeaTime Brewpub",          "address": "ul. Dietla 1, Kraków",             "lat": 50.058300, "lng": 19.942100, "category": "pub"},
+    {"name": "Hard Rock Cafe Kraków",    "address": "Rynek Główny 25, 31-008 Kraków",   "lat": 50.061900, "lng": 19.936800, "category": "bar", "website_url": "https://cafe.hardrock.com/krakow/"},
 ]
 
 # ── Deals ─────────────────────────────────────────────────────────────────────
@@ -92,9 +93,6 @@ DEALS_RAW = [
     ("Ambasada Śledzia",        "Śledź + kieliszek wódki za 12 PLN",                       "12:00", "22:00", ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"], "food", ["cheap"],          3),
     ("Ambasada Śledzia",        "Happy hour — drinki -30% po 17:00",                        "17:00", "19:00", ["monday","tuesday","wednesday","thursday","friday"], "cocktails", ["cheap"],          4),
 
-    # Forum Przestrzenie
-    ("Forum Przestrzenie",      "Sunset happy hour — koktajle -20% z widokiem na Wisłę",   "17:00", "19:00", ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"], "cocktails", ["cheap","date"], 3),
-
     # Bunkier Cafe
     ("Bunkier Cafe",            "Kawa + kawałek ciasta 14 PLN do 15:00",                   "10:00", "15:00", ["monday","tuesday","wednesday","thursday","friday"], "food",      ["cheap"],          2),
     ("Bunkier Cafe",            "Artystyczny aperitivo — wino + przekąska 25 PLN",          "17:00", "19:00", ["thursday","friday","saturday"],                     "cocktails", ["cheap","date"],   3),
@@ -119,7 +117,14 @@ DEALS_RAW = [
     # Nowy Kraftowy
     ("Nowy Kraftowy",           "Plac Nowy happy hour — piwa -20%",                         "15:00", "18:00", ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"], "beer", ["cheap","craft"], 3),
     ("Nowy Kraftowy",           "Piątkowy student night — 2+1 na piwa lane",               "19:00", "22:00", ["friday"],                                           "beer",      ["student","cheap","craft"], 5),
+
+    # Hard Rock Cafe Kraków — official breakfast offering
+    ("Hard Rock Cafe Kraków",   "Breakfast menu served daily",                              "10:00", "12:00", ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"], "food", ["general"], 1),
 ]
+
+SOURCE_URLS = {
+    "Hard Rock Cafe Kraków": "https://cafe.hardrock.com/krakow/",
+}
 
 
 # ── Insert logic ──────────────────────────────────────────────────────────────
@@ -140,7 +145,16 @@ def seed():
     venue_skipped = 0
 
     for v in VENUES:
+        v = dict(v)
+        v["maps_url"] = (
+            "https://www.google.com/maps/search/?api=1&query="
+            + quote(f"{v['lat']},{v['lng']}", safe="")
+        )
         if v["name"] in existing_names:
+            metadata = {"maps_url": v["maps_url"]}
+            if v.get("website_url"):
+                metadata["website_url"] = v["website_url"]
+            client.table("venues").update(metadata).eq("name", v["name"]).execute()
             venue_skipped += 1
             continue
         client.table("venues").insert(v).execute()
@@ -184,6 +198,9 @@ def seed():
             "type":        dtype,
             "tags":        tags,
             "value_score": score,
+            "source_url":   SOURCE_URLS.get(venue_name),
+            "confidence":   "high" if venue_name in SOURCE_URLS else None,
+            "dedupe_key":   f"seed:{venue_id}:{desc[:40]}",
         }
 
         try:

@@ -69,8 +69,10 @@ def validate_deal(deal: dict, known_venue_ids: set[str]) -> tuple[bool, list[str
         errors.append("invalid or missing start_time")
     if not end:
         errors.append("invalid or missing end_time")
-    if start and end and start >= end:
-        errors.append(f"start_time {start} is not before end_time {end}")
+    # A later end time is a normal same-day deal; an earlier end time is an
+    # overnight deal and is handled by services.deals.is_active_now().
+    if start and end and start == end:
+        errors.append(f"start_time {start} must differ from end_time")
 
     # days
     days = normalize_days(deal.get("days_of_week"))
