@@ -267,6 +267,30 @@ def deals_preview(
         status_html = '<div class="status active">🟢 ' + str(len(active)) + " active deal(s) right now in Kraków</div>"
 
     cards_html = "\n".join(build_card(d, venue_map) for d in top10)
+    type_options = [
+        ("", "All types"),
+        ("beer", "Beer"),
+        ("food", "Food"),
+        ("cocktails", "Cocktails"),
+        ("shots", "Shots"),
+    ]
+    tag_options = [
+        ("", "All tags"),
+        ("cheap", "Cheap"),
+        ("student", "Student"),
+        ("craft", "Craft"),
+        ("date", "Date"),
+    ]
+    type_select = "".join(
+        '<option value="' + value + '"' + (" selected" if value == (deal_type or "") else "")
+        + ">" + label + "</option>"
+        for value, label in type_options
+    )
+    tag_select = "".join(
+        '<option value="' + value + '"' + (" selected" if value == (tag or "") else "")
+        + ">" + label + "</option>"
+        for value, label in tag_options
+    )
     venue_pills = []
     for venue in sorted(venue_map.values(), key=lambda item: item.get("name", "")):
         venue_name = escape(str(venue.get("name", "")))
@@ -291,13 +315,9 @@ def deals_preview(
         "</header>"
         + status_html
         + '<form class="filters" method="get" action="/deals/preview">'
-        + '<select class="filter" name="type"><option value="">All types</option>'
-        + '<option value="beer">Beer</option><option value="food">Food</option>'
-        + '<option value="cocktails">Cocktails</option><option value="shots">Shots</option>'
-        + '</select><select class="filter" name="tag"><option value="">All tags</option>'
-        + '<option value="cheap">Cheap</option><option value="student">Student</option>'
-        + '<option value="craft">Craft</option><option value="date">Date</option>'
-        + '</select><button class="filter" type="submit">Filter deals</button></form>'
+        + '<select class="filter" name="type">' + type_select + '</select>'
+        + '<select class="filter" name="tag">' + tag_select + '</select>'
+        + '<button class="filter" type="submit">Filter deals</button></form>'
         + '<div class="grid">' + cards_html + "</div>"
         + '<section class="map-panel"><div class="map-title">Explore venues on the map</div>'
         + '<div class="venue-list">' + "".join(venue_pills) + "</div></section>"
