@@ -71,11 +71,16 @@ The project uses the Python standard library test runner:
 ```text
 GET /health
 GET /venues/
+GET /venues/{venue_id}
 GET /deals/
 GET /deals/?active_now=true
 GET /deals/preview
 GET /deals/?type=beer&tag=student
 ```
+
+Venue cards link to a JSON venue detail endpoint and to Google Maps using the
+stored coordinates. The detail response includes the venue metadata and its
+currently visible deals.
 
 ## Admin API
 

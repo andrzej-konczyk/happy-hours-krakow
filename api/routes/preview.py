@@ -141,6 +141,27 @@ body {
 .source { margin-top: auto; padding-top: 14px; font-size: .75rem; color: #77809d; }
 .source a, .footer a { color: #ffd43b; text-decoration: none; }
 .source a:hover, .footer a:hover { text-decoration: underline; }
+.venue-link { color: inherit; text-decoration: none; }
+.venue-link:hover { color: #ffd43b; }
+.map-panel {
+    max-width: 1100px;
+    margin: 28px auto 0;
+    padding: 18px 20px;
+    border: 1px solid #333957;
+    border-radius: 18px;
+    background: rgba(29, 33, 52, .68);
+}
+.map-title { color: #ffd43b; font-size: 1rem; margin-bottom: 10px; }
+.venue-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.venue-pill {
+    border: 1px solid #3b4263;
+    border-radius: 999px;
+    padding: 7px 11px;
+    color: #c1c8df;
+    text-decoration: none;
+    font-size: .8rem;
+}
+.venue-pill:hover { border-color: #ffd43b; color: #ffd43b; }
 .footer { text-align: center; margin-top: 34px; color: #69718c; font-size: 0.8rem; }
 @media (max-width: 520px) {
     body { padding: 20px 12px 30px; }
@@ -160,7 +181,7 @@ def render_stars(score: int) -> str:
 
 def get_venue_map() -> dict:
     client = get_client()
-    venues = client.table("venues").select("id, name, address, website_url, maps_url").execute()
+    venues = client.table("venues").select("id, name, address, lat, lng, website_url, maps_url").execute()
     return {v["id"]: v for v in venues.data}
 
 
@@ -211,7 +232,8 @@ def build_card(deal: dict, venue_map: dict) -> str:
     return (
         '<div class="card">'
         '<div class="card-header">'
-        '<span class="venue">' + type_icon + " " + name + "</span>"
+        '<a class="venue venue-link" href="/venues/' + escape(str(deal.get("venue_id")), quote=True)
+        + '">' + type_icon + " " + name + "</a>"
         + active_badge
         + '<span class="stars" title="Value score ' + str(score) + '/5">' + stars + "</span>"
         "</div>"
@@ -245,6 +267,17 @@ def deals_preview(
         status_html = '<div class="status active">🟢 ' + str(len(active)) + " active deal(s) right now in Kraków</div>"
 
     cards_html = "\n".join(build_card(d, venue_map) for d in top10)
+    venue_pills = []
+    for venue in sorted(venue_map.values(), key=lambda item: item.get("name", "")):
+        venue_name = escape(str(venue.get("name", "")))
+        maps_url = venue.get("maps_url") or (
+            "https://www.google.com/maps/search/?api=1&query="
+            + str(venue.get("lat", "")) + "," + str(venue.get("lng", ""))
+        )
+        venue_pills.append(
+            '<a class="venue-pill" href="' + escape(str(maps_url), quote=True)
+            + '" target="_blank" rel="noopener">📍 ' + venue_name + "</a>"
+        )
 
     html = (
         "<!DOCTYPE html><html lang='pl'><head>"
@@ -266,6 +299,8 @@ def deals_preview(
         + '<option value="craft">Craft</option><option value="date">Date</option>'
         + '</select><button class="filter" type="submit">Filter deals</button></form>'
         + '<div class="grid">' + cards_html + "</div>"
+        + '<section class="map-panel"><div class="map-title">Explore venues on the map</div>'
+        + '<div class="venue-list">' + "".join(venue_pills) + "</div></section>"
         "<div class='footer'>Fresh local deals · <a href='/docs'>API docs</a></div></main>"
         "</body></html>"
     )

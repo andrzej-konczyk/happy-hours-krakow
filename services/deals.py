@@ -46,6 +46,12 @@ def get_all_venues():
     return client.table("venues").select("*").execute().data
 
 
+def get_venue(venue_id: str):
+    client = get_client()
+    result = client.table("venues").select("*").eq("id", venue_id).limit(1).execute()
+    return result.data[0] if result.data else None
+
+
 def get_all_deals(
     *,
     active_now: bool = False,
