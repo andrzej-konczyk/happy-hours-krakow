@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 from datetime import datetime
+from html import escape
 from services.deals import get_all_deals, is_active_now
 from db.client import get_client
 
@@ -26,32 +27,55 @@ TYPE_EMOJI = {
 CSS = """
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #0f1117;
-    color: #e0e0e0;
-    padding: 24px 16px;
+    min-height: 100vh;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: radial-gradient(circle at 50% -10%, #252b52 0, #11131d 42%, #0b0d13 100%);
+    color: #e8eaf2;
+    padding: 28px 16px 40px;
 }
-h1 {
+.hero {
+    max-width: 1100px;
+    margin: 0 auto 26px;
     text-align: center;
-    font-size: 2rem;
-    margin-bottom: 4px;
-    color: #f5c518;
+}
+.logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    letter-spacing: -0.04em;
+    color: #ffd43b;
+    text-shadow: 0 8px 30px rgba(255, 212, 59, .18);
+}
+.logo-mark {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #ffd43b, #ff9f1c);
+    color: #1a1720;
+    font-size: 1.8rem;
+    box-shadow: 0 8px 24px rgba(255, 159, 28, .25);
 }
 .subtitle {
     text-align: center;
-    color: #888;
-    margin-bottom: 20px;
-    font-size: 0.9rem;
+    color: #9da3bb;
+    margin: 8px 0 18px;
+    font-size: 0.95rem;
 }
 .status {
+    max-width: 1100px;
+    margin: 0 auto 24px;
     text-align: center;
-    padding: 10px 20px;
-    border-radius: 8px;
-    margin-bottom: 24px;
+    padding: 13px 20px;
+    border: 1px solid transparent;
+    border-radius: 14px;
     font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .12);
 }
-.status.active   { background: #1a3a1a; color: #4caf50; }
-.status.inactive { background: #2a2a1a; color: #f5c518; }
+.status.active   { background: rgba(34, 126, 66, .28); border-color: rgba(86, 220, 124, .25); color: #76ee9c; }
+.status.inactive { background: rgba(157, 116, 22, .24); border-color: rgba(255, 212, 59, .22); color: #ffd95a; }
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -60,30 +84,51 @@ h1 {
     margin: 0 auto;
 }
 .card {
-    background: #1e2130;
-    border: 1px solid #2e3250;
-    border-radius: 12px;
-    padding: 18px;
-    transition: transform 0.15s;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 205px;
+    background: rgba(29, 33, 52, .82);
+    border: 1px solid #333957;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, .2);
+    transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
 }
-.card:hover { transform: translateY(-2px); border-color: #f5c518; }
+.card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 3px;
+    background: linear-gradient(90deg, #ffd43b, #ff8c42);
+}
+.card:hover { transform: translateY(-4px); border-color: #ffd43b; box-shadow: 0 24px 55px rgba(0, 0, 0, .3); }
 .card-header {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
     flex-wrap: wrap;
 }
-.venue { font-weight: 700; font-size: 1rem; flex: 1; color: #ffffff; }
-.stars { color: #f5c518; font-size: 0.85rem; letter-spacing: 1px; }
-.badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 99px; font-weight: 700; }
-.active-badge { background: #1a3a1a; color: #4caf50; }
-.deal-desc { font-size: 1rem; color: #c0c8e0; margin-bottom: 10px; line-height: 1.4; }
-.meta { font-size: 0.82rem; color: #888; margin-bottom: 6px; }
-.address { font-size: 0.8rem; color: #666; margin-bottom: 10px; }
+.venue { font-weight: 750; font-size: 1.04rem; flex: 1; color: #ffffff; }
+.stars { color: #ffd43b; font-size: 0.82rem; letter-spacing: 1px; white-space: nowrap; }
+.badge { font-size: 0.68rem; padding: 4px 9px; border-radius: 99px; font-weight: 800; letter-spacing: .03em; }
+.active-badge { background: rgba(55, 174, 83, .22); color: #76ee9c; }
+.deal-desc { font-size: 1.05rem; color: #e2e6f5; margin-bottom: 14px; line-height: 1.45; }
+.meta { font-size: 0.84rem; color: #aeb5ce; margin-bottom: 7px; }
+.address { font-size: 0.82rem; color: #858da8; margin-bottom: 14px; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; }
-.tag { background: #2a2d45; color: #a0aec0; font-size: 0.75rem; padding: 3px 10px; border-radius: 99px; }
-.footer { text-align: center; margin-top: 32px; color: #444; font-size: 0.8rem; }
+.tag { background: #2b304b; color: #c1c8df; font-size: 0.75rem; padding: 4px 10px; border-radius: 99px; }
+.source { margin-top: auto; padding-top: 14px; font-size: .75rem; color: #77809d; }
+.source a, .footer a { color: #ffd43b; text-decoration: none; }
+.source a:hover, .footer a:hover { text-decoration: underline; }
+.footer { text-align: center; margin-top: 34px; color: #69718c; font-size: 0.8rem; }
+@media (max-width: 520px) {
+    body { padding: 20px 12px 30px; }
+    .grid { grid-template-columns: 1fr; }
+    .card { min-height: 0; }
+}
 """
 
 
@@ -103,28 +148,35 @@ def get_venue_map() -> dict:
 
 def build_card(deal: dict, venue_map: dict) -> str:
     venue    = venue_map.get(str(deal.get("venue_id")), {})
-    name     = venue.get("name", "Unknown venue")
-    address  = venue.get("address", "")
-    desc     = deal.get("description", "").capitalize()
+    name     = escape(str(venue.get("name", "Unknown venue")))
+    address  = escape(str(venue.get("address", "")))
+    desc     = escape(str(deal.get("description", "")).capitalize())
     start    = format_time(deal.get("start_time", ""))
     end      = format_time(deal.get("end_time", ""))
     score    = deal.get("value_score", 1)
-    dtype    = deal.get("type", "mixed")
+    dtype    = str(deal.get("type", "mixed"))
     tags     = deal.get("tags") or []
     days     = deal.get("days_of_week") or []
 
     type_icon = TYPE_EMOJI.get(dtype, "🎉")
     stars     = render_stars(score)
-    days_short = ", ".join(d[:3].capitalize() for d in days)
+    days_short = escape(", ".join(d[:3].capitalize() for d in days))
 
     tags_html = " ".join(
-        '<span class="tag">' + TAG_EMOJI.get(t, "•") + " " + t + "</span>"
+        '<span class="tag">' + TAG_EMOJI.get(t, "•") + " " + escape(str(t)) + "</span>"
         for t in tags
     )
 
     active_badge = ""
     if is_active_now(deal):
         active_badge = '<span class="badge active-badge">● ACTIVE NOW</span>'
+
+    source_url = deal.get("source_url")
+    source_html = (
+        '<div class="source"><a href="' + escape(str(source_url), quote=True)
+        + '" target="_blank" rel="noopener">View source ↗</a></div>'
+        if source_url else ""
+    )
 
     return (
         '<div class="card">'
@@ -137,7 +189,8 @@ def build_card(deal: dict, venue_map: dict) -> str:
         '<div class="meta">🕐 ' + start + " – " + end + " &nbsp;|&nbsp; 📅 " + days_short + "</div>"
         '<div class="address">📍 ' + address + "</div>"
         '<div class="tags">' + tags_html + "</div>"
-        "</div>"
+        + source_html
+        + "</div>"
     )
 
 
@@ -160,17 +213,18 @@ def deals_preview():
     cards_html = "\n".join(build_card(d, venue_map) for d in top10)
 
     html = (
-        "<!DOCTYPE html><html lang='en'><head>"
+        "<!DOCTYPE html><html lang='pl'><head>"
         "<meta charset='UTF-8'>"
         "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
         "<title>Happy Hours Kraków</title>"
         "<style>" + CSS + "</style>"
         "</head><body>"
-        "<h1>🍺 Happy Hours Kraków</h1>"
+        "<main><header class='hero'><div class='logo'><span class='logo-mark'>🍺</span><span>Happy Hours Kraków</span></div>"
         "<p class='subtitle'>Updated " + now.strftime("%A, %H:%M") + " · Top deals sorted by value</p>"
+        "</header>"
         + status_html
         + '<div class="grid">' + cards_html + "</div>"
-        "<div class='footer'>Happy Hours Kraków MVP · <a href='/docs' style='color:#555'>API docs</a></div>"
+        "<div class='footer'>Fresh local deals · <a href='/docs'>API docs</a></div></main>"
         "</body></html>"
     )
 

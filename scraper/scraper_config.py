@@ -8,11 +8,9 @@ Used by scraper.py in batch mode.
 
 HTML_SOURCES = [
     {"venue": "Alchemia",              "url": "https://alchemia.com.pl/"},
-    {"venue": "Propaganda Pub",        "url": "https://www.propaganda-pub.pl/"},
-    {"venue": "Stara Zajezdnia",       "url": "https://starazajezdnia.pl/"},
-    {"venue": "C.K. Browar",           "url": "https://ckbrowar.pl/pub/"},
-    {"venue": "Omerta Pub",            "url": "https://www.omerta.com.pl/"},
-    {"venue": "Forum Przestrzenie",    "url": "https://forumprzestrzenie.pl/"},
+    {"venue": "Stara Zajezdnia",       "url": "https://starazajezdniakrakow.pl/restauracja/"},
+    {"venue": "C.K. Browar",           "url": "https://ckbrowar.pl/menu/"},
+    {"venue": "Omerta Pub",            "url": "https://omerta.ontap.pl/"},
     {"venue": "Spoko Pub",             "url": "https://spokopub.pl/"},
 ]
 
