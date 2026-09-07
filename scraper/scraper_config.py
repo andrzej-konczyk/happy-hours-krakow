@@ -12,6 +12,7 @@ HTML_SOURCES = [
     {"venue": "C.K. Browar",           "url": "https://ckbrowar.pl/menu/"},
     {"venue": "Omerta Pub",            "url": "https://omerta.ontap.pl/"},
     {"venue": "Spoko Pub",             "url": "https://spokopub.pl/"},
+    {"venue": "Hard Rock Cafe Kraków", "url": "https://cafe.hardrock.com/krakow/"},
 ]
 
 # ── PDF menus ─────────────────────────────────────────────────────────────────

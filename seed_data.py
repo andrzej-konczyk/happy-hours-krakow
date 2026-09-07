@@ -37,6 +37,7 @@ VENUES = [
     {"name": "Spoko Pub",                "address": "ul. Kalwaryjska 9, Kraków",        "lat": 50.047200, "lng": 19.934800, "category": "pub"},
     {"name": "Ursa Maior",               "address": "ul. Szewska 21, Kraków",           "lat": 50.061700, "lng": 19.936400, "category": "pub"},
     {"name": "TeaTime Brewpub",          "address": "ul. Dietla 1, Kraków",             "lat": 50.058300, "lng": 19.942100, "category": "pub"},
+    {"name": "Hard Rock Cafe Kraków",    "address": "Rynek Główny 25, 31-008 Kraków",   "lat": 50.061900, "lng": 19.936800, "category": "bar"},
 ]
 
 # ── Deals ─────────────────────────────────────────────────────────────────────
@@ -119,7 +120,14 @@ DEALS_RAW = [
     # Nowy Kraftowy
     ("Nowy Kraftowy",           "Plac Nowy happy hour — piwa -20%",                         "15:00", "18:00", ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"], "beer", ["cheap","craft"], 3),
     ("Nowy Kraftowy",           "Piątkowy student night — 2+1 na piwa lane",               "19:00", "22:00", ["friday"],                                           "beer",      ["student","cheap","craft"], 5),
+
+    # Hard Rock Cafe Kraków — official breakfast offering
+    ("Hard Rock Cafe Kraków",   "Breakfast menu served daily",                              "10:00", "12:00", ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"], "food", ["general"], 1),
 ]
+
+SOURCE_URLS = {
+    "Hard Rock Cafe Kraków": "https://cafe.hardrock.com/krakow/",
+}
 
 
 # ── Insert logic ──────────────────────────────────────────────────────────────
@@ -184,6 +192,9 @@ def seed():
             "type":        dtype,
             "tags":        tags,
             "value_score": score,
+            "source_url":   SOURCE_URLS.get(venue_name),
+            "confidence":   "high" if venue_name in SOURCE_URLS else None,
+            "dedupe_key":   f"seed:{venue_id}:{desc[:40]}",
         }
 
         try:
