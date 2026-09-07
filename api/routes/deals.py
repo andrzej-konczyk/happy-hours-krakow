@@ -13,6 +13,8 @@ def list_deals(
     venue_id: str | None = Query(default=None),
     day: str | None = Query(default=None),
     status: str | None = Query(default=None),
+    limit: int = Query(default=50, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
 ):
     return get_all_deals(
         active_now=active_now,
@@ -21,4 +23,6 @@ def list_deals(
         venue_id=venue_id,
         day=day,
         status=status,
+        limit=limit,
+        offset=offset,
     )

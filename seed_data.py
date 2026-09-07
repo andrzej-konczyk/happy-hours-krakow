@@ -151,10 +151,10 @@ def seed():
             + quote(f"{v['lat']},{v['lng']}", safe="")
         )
         if v["name"] in existing_names:
-            client.table("venues").update({
-                "website_url": v.get("website_url"),
-                "maps_url": v["maps_url"],
-            }).eq("name", v["name"]).execute()
+            metadata = {"maps_url": v["maps_url"]}
+            if v.get("website_url"):
+                metadata["website_url"] = v["website_url"]
+            client.table("venues").update(metadata).eq("name", v["name"]).execute()
             venue_skipped += 1
             continue
         client.table("venues").insert(v).execute()

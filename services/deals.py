@@ -60,6 +60,8 @@ def get_all_deals(
     venue_id: str | None = None,
     day: str | None = None,
     status: str | None = None,
+    limit: int | None = None,
+    offset: int = 0,
 ):
     client = get_client()
     deals = [
@@ -78,6 +80,10 @@ def get_all_deals(
         deals = [deal for deal in deals if day in (deal.get("days_of_week") or [])]
     if active_now:
         deals = [deal for deal in deals if is_active_now(deal)]
+    if offset:
+        deals = deals[offset:]
+    if limit is not None:
+        deals = deals[:limit]
     return deals
 
 

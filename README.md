@@ -70,17 +70,23 @@ The project uses the Python standard library test runner:
 
 ```text
 GET /health
+GET /ready
 GET /venues/
 GET /venues/{venue_id}
 GET /deals/
 GET /deals/?active_now=true
 GET /deals/preview
 GET /deals/?type=beer&tag=student
+GET /deals/?limit=25&offset=25
 ```
 
 Venue cards link to a JSON venue detail endpoint and to Google Maps using the
 stored coordinates. The detail response includes the venue metadata and its
 currently visible deals.
+
+`/health` is a liveness check. `/ready` verifies that Supabase is configured and
+reachable. Deal responses support `limit` (1–100, default 50) and `offset`
+(default 0) for bounded result pages.
 
 ## Admin API
 
