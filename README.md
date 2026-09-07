@@ -23,7 +23,8 @@ installation or installs Python 3.13 through Windows `winget`.
 
 Fill in `SUPABASE_URL` and `SUPABASE_KEY` in `.env`. Apply
 `database/migrations/001_initial_schema.sql` and then
-`database/migrations/002_deal_freshness.sql` in the Supabase SQL editor, then
+`database/migrations/002_deal_freshness.sql` and
+`database/migrations/003_venue_metadata.sql` in the Supabase SQL editor, then
 seed the database:
 
 ```powershell
@@ -75,6 +76,21 @@ GET /deals/?active_now=true
 GET /deals/preview
 GET /deals/?type=beer&tag=student
 ```
+
+## Admin API
+
+Set a long random `ADMIN_TOKEN` in `.env`. Send it as the `X-Admin-Token`
+header. Admin routes create manual deals as `pending`, verify or expire them,
+and never expose the token in responses:
+
+```text
+POST /admin/deals
+PATCH /admin/deals/{id}/status
+POST /admin/deals/{id}/expire
+```
+
+Keep the admin token server-side and do not use these endpoints directly from
+untrusted browser code.
 
 The public read policies in the migration allow the API to read venues and
 deals using a Supabase anon key. Keep service-role keys out of source control.

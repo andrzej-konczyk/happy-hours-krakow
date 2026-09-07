@@ -160,7 +160,7 @@ def render_stars(score: int) -> str:
 
 def get_venue_map() -> dict:
     client = get_client()
-    venues = client.table("venues").select("id, name, address").execute()
+    venues = client.table("venues").select("id, name, address, website_url, maps_url").execute()
     return {v["id"]: v for v in venues.data}
 
 
@@ -201,6 +201,13 @@ def build_card(deal: dict, venue_map: dict) -> str:
         if deal.get("status") else ""
     )
 
+    venue_links = ""
+    if venue.get("website_url"):
+        venue_links += '<a href="' + escape(str(venue["website_url"]), quote=True) + '" target="_blank" rel="noopener">Website ↗</a> '
+    if venue.get("maps_url"):
+        venue_links += '<a href="' + escape(str(venue["maps_url"]), quote=True) + '" target="_blank" rel="noopener">Map ↗</a>'
+    venue_links_html = '<div class="source">' + venue_links + "</div>" if venue_links else ""
+
     return (
         '<div class="card">'
         '<div class="card-header">'
@@ -211,7 +218,8 @@ def build_card(deal: dict, venue_map: dict) -> str:
         '<div class="deal-desc">' + desc + "</div>"
         '<div class="meta">🕐 ' + start + " – " + end + " &nbsp;|&nbsp; 📅 " + days_short + "</div>"
         '<div class="address">📍 ' + address + "</div>"
-        '<div class="tags">' + tags_html + verification_html + "</div>"
+        + venue_links_html
+        + '<div class="tags">' + tags_html + verification_html + "</div>"
         + source_html
         + "</div>"
     )

@@ -9,3 +9,6 @@ class Venue(BaseModel):
     lat: float
     lng: float
     category: str
+    website_url: str | None = None
+    maps_url: str | None = None
+    phone: str | None = None

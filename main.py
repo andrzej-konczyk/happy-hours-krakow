@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from api.routes import health, venues, deals, preview
+from api.routes import admin, health, venues, deals, preview
 
 app = FastAPI(
     title="Happy Hours Kraków",
@@ -11,3 +11,4 @@ app.include_router(health.router)
 app.include_router(venues.router)
 app.include_router(deals.router)
 app.include_router(preview.router)
+app.include_router(admin.router)
