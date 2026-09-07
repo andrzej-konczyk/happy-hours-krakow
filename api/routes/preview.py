@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from fastapi.responses import HTMLResponse
 from datetime import datetime
 from html import escape
@@ -64,6 +64,24 @@ body {
     margin: 8px 0 18px;
     font-size: 0.95rem;
 }
+.filters {
+    max-width: 1100px;
+    margin: 0 auto 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+.filter {
+    border: 1px solid #3b4263;
+    border-radius: 999px;
+    background: rgba(29, 33, 52, .8);
+    color: #c1c8df;
+    padding: 8px 14px;
+    font: inherit;
+    font-size: .82rem;
+}
+.filter:focus { outline: 2px solid #ffd43b; outline-offset: 2px; }
 .status {
     max-width: 1100px;
     margin: 0 auto 24px;
@@ -178,6 +196,11 @@ def build_card(deal: dict, venue_map: dict) -> str:
         if source_url else ""
     )
 
+    verification_html = (
+        '<span class="tag">✓ ' + escape(str(deal.get("status", "verified"))) + "</span>"
+        if deal.get("status") else ""
+    )
+
     return (
         '<div class="card">'
         '<div class="card-header">'
@@ -188,15 +211,18 @@ def build_card(deal: dict, venue_map: dict) -> str:
         '<div class="deal-desc">' + desc + "</div>"
         '<div class="meta">🕐 ' + start + " – " + end + " &nbsp;|&nbsp; 📅 " + days_short + "</div>"
         '<div class="address">📍 ' + address + "</div>"
-        '<div class="tags">' + tags_html + "</div>"
+        '<div class="tags">' + tags_html + verification_html + "</div>"
         + source_html
         + "</div>"
     )
 
 
 @router.get("/deals/preview", response_class=HTMLResponse)
-def deals_preview():
-    all_deals = get_all_deals()
+def deals_preview(
+    deal_type: str | None = Query(default=None, alias="type"),
+    tag: str | None = Query(default=None),
+):
+    all_deals = get_all_deals(deal_type=deal_type, tag=tag)
     venue_map = get_venue_map()
     now       = datetime.now()
 
@@ -220,9 +246,17 @@ def deals_preview():
         "<style>" + CSS + "</style>"
         "</head><body>"
         "<main><header class='hero'><div class='logo'><span class='logo-mark'>🍺</span><span>Happy Hours Kraków</span></div>"
-        "<p class='subtitle'>Updated " + now.strftime("%A, %H:%M") + " · Top deals sorted by value</p>"
+        "<p class='subtitle'>Updated " + now.strftime("%A, %H:%M") + " · Fresh local deals</p>"
         "</header>"
         + status_html
+        + '<form class="filters" method="get" action="/deals/preview">'
+        + '<select class="filter" name="type"><option value="">All types</option>'
+        + '<option value="beer">Beer</option><option value="food">Food</option>'
+        + '<option value="cocktails">Cocktails</option><option value="shots">Shots</option>'
+        + '</select><select class="filter" name="tag"><option value="">All tags</option>'
+        + '<option value="cheap">Cheap</option><option value="student">Student</option>'
+        + '<option value="craft">Craft</option><option value="date">Date</option>'
+        + '</select><button class="filter" type="submit">Filter deals</button></form>'
         + '<div class="grid">' + cards_html + "</div>"
         "<div class='footer'>Fresh local deals · <a href='/docs'>API docs</a></div></main>"
         "</body></html>"

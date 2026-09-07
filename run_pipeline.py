@@ -120,6 +120,8 @@ def step_save(parsed_deals: list[dict]) -> int:
             "source_url":   deal.get("source_url"),
             "source_scraped_at": deal.get("source_scraped_at"),
             "confidence":    deal.get("confidence"),
+            "status":        "verified" if deal.get("confidence") == "high" else "pending",
+            "verified_at":   datetime.now().isoformat() if deal.get("confidence") == "high" else None,
             "dedupe_key":    hashlib.sha256(dedupe_input.encode("utf-8")).hexdigest(),
         }
         try:

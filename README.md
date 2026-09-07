@@ -22,7 +22,8 @@ installation or installs Python 3.13 through Windows `winget`.
 ```
 
 Fill in `SUPABASE_URL` and `SUPABASE_KEY` in `.env`. Apply
-`database/migrations/001_initial_schema.sql` in the Supabase SQL editor, then
+`database/migrations/001_initial_schema.sql` and then
+`database/migrations/002_deal_freshness.sql` in the Supabase SQL editor, then
 seed the database:
 
 ```powershell
@@ -72,6 +73,7 @@ GET /venues/
 GET /deals/
 GET /deals/?active_now=true
 GET /deals/preview
+GET /deals/?type=beer&tag=student
 ```
 
 The public read policies in the migration allow the API to read venues and
