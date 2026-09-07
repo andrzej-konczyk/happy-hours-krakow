@@ -1,0 +1,24 @@
+services:
+  api:
+    build: .
+    env_file:
+      - .env
+    ports:
+      - "${PORT:-8000}:8000"
+    restart: unless-stopped
+
+  seed:
+    build: .
+    env_file:
+      - .env
+    profiles:
+      - tools
+    command: ["python", "seed_data.py"]
+
+  pipeline:
+    build: .
+    env_file:
+      - .env
+    profiles:
+      - tools
+    command: ["python", "run_pipeline.py"]

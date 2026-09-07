@@ -14,7 +14,8 @@ FastAPI service and data pipeline for discovering current promotions in Kraków 
 
 ## Local setup
 
-Python 3.11 or newer is required.
+Python 3.11 or newer is required for direct execution. If Python is not
+installed, use the Docker setup below instead.
 
 ```powershell
 python -m venv .venv
@@ -67,6 +68,43 @@ python -m unittest discover -s tests -v
 ```
 
 ## Docker
+
+Docker is the recommended setup when Python is unavailable. Docker Desktop
+must be running, and `.env` must contain the Supabase credentials.
+
+Build the application image:
+
+```powershell
+docker compose build
+```
+
+Seed the restored Supabase project:
+
+```powershell
+docker compose --profile tools run --rm seed
+```
+
+Run the scraper and upsert current source data:
+
+```powershell
+docker compose --profile tools run --rm pipeline
+```
+
+Start the API:
+
+```powershell
+docker compose up -d api
+```
+
+Stop the API:
+
+```powershell
+docker compose down
+```
+
+The API is then available at `http://127.0.0.1:8000`.
+
+The equivalent single-container command is:
 
 ```powershell
 docker build -t happy-hours-krakow .
