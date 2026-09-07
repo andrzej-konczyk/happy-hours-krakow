@@ -97,7 +97,7 @@ def step_save(parsed_deals: list[dict]) -> int:
 
     # enrich → validate → save
     enriched = enrich_deals(parsed_deals)
-    clean    = clean_deals(enriched, known_venue_ids=known_ids)
+    clean    = clean_deals(enriched, known_venue_ids=set(venue_ids.values()))
 
     saved = 0
     for deal in clean:
