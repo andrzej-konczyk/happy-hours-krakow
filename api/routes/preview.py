@@ -164,9 +164,36 @@ body {
 .venue-pill:hover { border-color: #ffd43b; color: #ffd43b; }
 .footer { text-align: center; margin-top: 34px; color: #69718c; font-size: 0.8rem; }
 @media (max-width: 520px) {
-    body { padding: 20px 12px 30px; }
+    body { padding: 16px 10px 28px; }
+    .hero { margin-bottom: 18px; }
+    .logo { font-size: 1.75rem; }
+    .logo-mark { width: 42px; height: 42px; font-size: 1.5rem; }
+    .subtitle { margin-bottom: 14px; font-size: .82rem; }
+    .filters {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+    .filter {
+        width: 100%;
+        min-height: 44px;
+        padding: 9px 10px;
+        font-size: .8rem;
+    }
+    .filters button { grid-column: 1 / -1; }
+    .status { margin-bottom: 16px; padding: 11px 12px; font-size: .85rem; }
     .grid { grid-template-columns: 1fr; }
-    .card { min-height: 0; }
+    .card { min-height: 0; padding: 17px 15px; border-radius: 15px; }
+    .card:hover { transform: none; }
+    .card-header { margin-bottom: 11px; }
+    .venue { font-size: 1rem; }
+    .deal-desc { font-size: .98rem; }
+    .meta, .address { font-size: .78rem; }
+    .map-panel { margin-top: 20px; padding: 15px; border-radius: 15px; }
+    .venue-list { gap: 7px; }
+    .venue-pill { min-height: 40px; display: inline-flex; align-items: center; padding: 8px 10px; }
+    .footer { margin-top: 24px; }
 }
 """
 
