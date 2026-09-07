@@ -1,5 +1,6 @@
 import json
 import os
+import hashlib
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -8,7 +9,12 @@ from scraper.parser import parse_deal
 from db.client import get_client
 from scraper.validator import clean_deals
 from scraper.enricher import enrich_deals
-from scraper.scraper_config import ALL_HTML_URLS, ALL_PDF_URLS
+from scraper.scraper_config import (
+    ALL_HTML_URLS,
+    ALL_PDF_URLS,
+    HTML_SOURCES,
+    PDF_SOURCES,
+)
 
 load_dotenv()
 
@@ -22,11 +28,9 @@ USE_MOCK = not API_KEY  # automatycznie mock jeśli brak klucza
 HTML_URLS = ALL_HTML_URLS
 PDF_URLS  = ALL_PDF_URLS
 
-# venue_id musi istnieć w tabeli venues w Supabase
-# tymczasowo hardcode — później będzie z bazy
-VENUE_MAP = {
-    "https://alchemia.com.pl/":                                                "WSTAW-UUID-ALCHEMIA",
-    "https://ckbrowar.pl/wp-content/uploads/2026/02/menu-web-01.2026.pdf":    "82755228-76bb-4187-a167-f45ec077322d",
+SOURCE_VENUES = {
+    source["url"]: source["venue"]
+    for source in HTML_SOURCES + PDF_SOURCES
 }
 
 
@@ -55,9 +59,9 @@ def step_parse(scrape_results: list[dict]) -> list[dict]:
             log(f"  SKIP {result['url']} — no snippets")
             continue
 
-        venue_id = VENUE_MAP.get(result["url"])
-        if not venue_id or "WSTAW" in venue_id:
-            log(f"  SKIP {result['url']} — no venue_id configured")
+        venue_name = SOURCE_VENUES.get(result["url"])
+        if not venue_name:
+            log(f"  SKIP {result['url']} — no venue configured")
             continue
 
         for snippet in result["snippets"]:
@@ -68,8 +72,9 @@ def step_parse(scrape_results: list[dict]) -> list[dict]:
                 log(f"  ERROR parsing: {deal['error']}")
                 continue
 
-            deal["venue_id"] = venue_id
+            deal["venue_name"] = venue_name
             deal["source_url"] = result["url"]
+            deal["source_scraped_at"] = result.get("scraped_at")
             parsed.append(deal)
             log(f"  → {deal['description'][:60]} | {deal['start_time']}–{deal['end_time']} | confidence: {deal['confidence']}")
 
@@ -85,8 +90,10 @@ def step_save(parsed_deals: list[dict]) -> int:
         return 0
 
     client = get_client()
-    venues = client.table("venues").select("id").execute()
-    known_ids = {v["id"] for v in venues.data}
+    venues = client.table("venues").select("id, name").execute()
+    venue_ids = {v["name"]: v["id"] for v in venues.data}
+    for deal in parsed_deals:
+        deal["venue_id"] = venue_ids.get(deal.pop("venue_name", ""))
 
     # enrich → validate → save
     enriched = enrich_deals(parsed_deals)
@@ -94,6 +101,13 @@ def step_save(parsed_deals: list[dict]) -> int:
 
     saved = 0
     for deal in clean:
+        dedupe_input = "|".join([
+            str(deal["venue_id"]),
+            deal["description"],
+            deal["start_time"],
+            deal["end_time"],
+            ",".join(deal["days_of_week"]),
+        ])
         row = {
             "venue_id":     deal["venue_id"],
             "description":  deal["description"],
@@ -103,9 +117,13 @@ def step_save(parsed_deals: list[dict]) -> int:
             "type":         deal.get("type", "mixed"),
             "tags":         deal.get("tags", []),
             "value_score":  deal.get("value_score", 1),
+            "source_url":   deal.get("source_url"),
+            "source_scraped_at": deal.get("source_scraped_at"),
+            "confidence":    deal.get("confidence"),
+            "dedupe_key":    hashlib.sha256(dedupe_input.encode("utf-8")).hexdigest(),
         }
         try:
-            client.table("deals").insert(row).execute()
+            client.table("deals").upsert(row, on_conflict="dedupe_key").execute()
             saved += 1
             log(f"  SAVED [{row['type']} | score:{row['value_score']} | tags:{row['tags']}] {row['description'][:50]}")
         except Exception as e:
