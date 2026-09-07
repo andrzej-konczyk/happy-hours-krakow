@@ -38,7 +38,8 @@ Start the API:
 ```
 
 The API is available at `http://127.0.0.1:8000`. Interactive documentation is
-at `/docs`, and the human-readable preview is at `/deals/preview`.
+at `/docs`, and the human-readable preview is at `/deals/preview`. The root
+URL redirects to the preview, so the base public URL can be shared directly.
 
 ## Pipeline
 
