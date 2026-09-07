@@ -32,7 +32,6 @@ VENUES = [
     {"name": "Nowy Kraftowy",            "address": "Plac Nowy 8, Kraków",              "lat": 50.051000, "lng": 19.943800, "category": "pub"},
     {"name": "Pijalnia Wódki i Piwa",    "address": "ul. Św. Jana 5, Kraków",           "lat": 50.062800, "lng": 19.937100, "category": "bar"},
     {"name": "Ambasada Śledzia",         "address": "ul. Stolarska 8, Kraków",          "lat": 50.061400, "lng": 19.939200, "category": "bar"},
-    {"name": "Forum Przestrzenie",       "address": "ul. Konopnickiej 28, Kraków",      "lat": 50.051700, "lng": 19.927300, "category": "bar"},
     {"name": "Bunkier Cafe",             "address": "Plac Szczepański 3a, Kraków",      "lat": 50.062300, "lng": 19.933600, "category": "cafe"},
     {"name": "Spoko Pub",                "address": "ul. Kalwaryjska 9, Kraków",        "lat": 50.047200, "lng": 19.934800, "category": "pub"},
     {"name": "Ursa Maior",               "address": "ul. Szewska 21, Kraków",           "lat": 50.061700, "lng": 19.936400, "category": "pub"},
@@ -92,9 +91,6 @@ DEALS_RAW = [
     # Ambasada Śledzia
     ("Ambasada Śledzia",        "Śledź + kieliszek wódki za 12 PLN",                       "12:00", "22:00", ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"], "food", ["cheap"],          3),
     ("Ambasada Śledzia",        "Happy hour — drinki -30% po 17:00",                        "17:00", "19:00", ["monday","tuesday","wednesday","thursday","friday"], "cocktails", ["cheap"],          4),
-
-    # Forum Przestrzenie
-    ("Forum Przestrzenie",      "Sunset happy hour — koktajle -20% z widokiem na Wisłę",   "17:00", "19:00", ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"], "cocktails", ["cheap","date"], 3),
 
     # Bunkier Cafe
     ("Bunkier Cafe",            "Kawa + kawałek ciasta 14 PLN do 15:00",                   "10:00", "15:00", ["monday","tuesday","wednesday","thursday","friday"], "food",      ["cheap"],          2),
