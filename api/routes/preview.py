@@ -251,8 +251,9 @@ def build_card(deal: dict, venue_map: dict) -> str:
 def deals_preview(
     deal_type: str | None = Query(default=None, alias="type"),
     tag: str | None = Query(default=None),
+    day: str | None = Query(default=None),
 ):
-    all_deals = get_all_deals(deal_type=deal_type, tag=tag)
+    all_deals = get_all_deals(deal_type=deal_type, tag=tag, day=day)
     venue_map = get_venue_map()
     now       = datetime.now()
 
@@ -281,6 +282,16 @@ def deals_preview(
         ("craft", "Craft"),
         ("date", "Date"),
     ]
+    day_options = [
+        ("", "All days"),
+        ("monday", "Monday"),
+        ("tuesday", "Tuesday"),
+        ("wednesday", "Wednesday"),
+        ("thursday", "Thursday"),
+        ("friday", "Friday"),
+        ("saturday", "Saturday"),
+        ("sunday", "Sunday"),
+    ]
     type_select = "".join(
         '<option value="' + value + '"' + (" selected" if value == (deal_type or "") else "")
         + ">" + label + "</option>"
@@ -290,6 +301,11 @@ def deals_preview(
         '<option value="' + value + '"' + (" selected" if value == (tag or "") else "")
         + ">" + label + "</option>"
         for value, label in tag_options
+    )
+    day_select = "".join(
+        '<option value="' + value + '"' + (" selected" if value == (day or "") else "")
+        + ">" + label + "</option>"
+        for value, label in day_options
     )
     venue_pills = []
     for venue in sorted(venue_map.values(), key=lambda item: item.get("name", "")):
@@ -317,6 +333,7 @@ def deals_preview(
         + '<form class="filters" method="get" action="/deals/preview">'
         + '<select class="filter" name="type">' + type_select + '</select>'
         + '<select class="filter" name="tag">' + tag_select + '</select>'
+        + '<select class="filter" name="day">' + day_select + '</select>'
         + '<button class="filter" type="submit">Filter deals</button></form>'
         + '<div class="grid">' + cards_html + "</div>"
         + '<section class="map-panel"><div class="map-title">Explore venues on the map</div>'

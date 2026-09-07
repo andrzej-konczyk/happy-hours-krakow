@@ -78,6 +78,7 @@ GET /deals/?active_now=true
 GET /deals/preview
 GET /deals/?type=beer&tag=student
 GET /deals/?limit=25&offset=25
+GET /deals/preview?day=friday
 ```
 
 Venue cards link to a JSON venue detail endpoint and to Google Maps using the
